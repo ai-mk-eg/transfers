@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>دفتر التحويلات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B1020;--panel:#121A2E;--panel2:#18223B;--line:#26324F;--txt:#E8EDF7;--mut:#8C9AB8;--acc:#4F8CFF;--ok:#22C55E;--bad:#EF4444;--warn:#F59E0B;--gold:#FBBF24}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',Tahoma,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px;width:100%}
+header{background:linear-gradient(180deg,#121A2E,#0E1528);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+header .wrap{display:flex;align-items:center;gap:12px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px}
+.logo i{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#4F8CFF,#7C3AED);display:grid;place-items:center;font-style:normal}
+.sp{flex:1}
+.me{color:var(--mut);font-weight:700;font-size:14px}
+.btn{border:0;border-radius:11px;padding:9px 16px;font-weight:800;cursor:pointer;background:var(--panel2);border:1px solid var(--line);transition:.15s}
+.btn:hover{border-color:var(--acc)}
+.btn.p{background:linear-gradient(180deg,#5B95FF,#3B73E6);border-color:transparent}
+.btn.g{background:linear-gradient(180deg,#2BD96B,#16A34A);border-color:transparent}
+.btn.r{background:transparent;color:#FCA5A5;border-color:#5b2330}
+.btn.sm{padding:5px 10px;font-size:13px;border-radius:9px}
+main{flex:1;padding:22px 0 40px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat small{color:var(--mut);font-weight:700;font-size:13px;display:block}
+.stat b{font-size:26px;font-weight:900;display:block;margin-top:2px}
+.stat.ok b{color:var(--ok)}.stat.bad b{color:var(--bad)}.stat.warn b{color:var(--warn)}.stat.gold b{color:var(--gold)}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 12px}
+.in{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:9px 12px;outline:none;min-width:0}
+.in:focus{border-color:var(--acc)}
+.search{flex:1;min-width:220px;position:relative}
+.search .in{width:100%;padding-right:38px}
+.search svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--mut)}
+.chips{display:flex;gap:6px}
+.chip{padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-weight:700;font-size:13px}
+.chip.on{background:var(--acc);border-color:var(--acc)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{background:var(--panel2);color:var(--mut);font-size:13px;font-weight:800;text-align:right;padding:12px 14px;white-space:nowrap}
+td{padding:11px 14px;border-top:1px solid var(--line);font-weight:700;vertical-align:middle}
+tr:hover td{background:rgba(79,140,255,.04)}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.tag{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-weight:900;font-size:13px;cursor:pointer;border:1px solid transparent}
+.tag.ok{background:rgba(34,197,94,.14);color:#4ADE80;border-color:rgba(34,197,94,.35)}
+.tag.bad{background:rgba(239,68,68,.12);color:#F87171;border-color:rgba(239,68,68,.35)}
+.tag.no{background:rgba(140,154,184,.12);color:var(--mut);border-color:var(--line)}
+.rem{display:block;font-size:12px;color:var(--warn);margin-top:3px}
+.name{cursor:pointer;color:#BFD4FF}
+.name:hover{text-decoration:underline}
+.empty{padding:40px;text-align:center;color:var(--mut);font-weight:700}
+.person{background:linear-gradient(160deg,#16213D,#121A2E);border:1px solid #2f4170;border-radius:18px;padding:16px 18px;margin-bottom:14px;display:none}
+.person h3{font-size:20px;font-weight:900;display:flex;align-items:center;gap:10px}
+.person .pg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.person .pg div{background:rgba(0,0,0,.2);border-radius:12px;padding:10px 12px}
+.person .pg small{color:var(--mut);font-weight:700;font-size:12px;display:block}
+.person .pg b{font-size:20px;font-weight:900}
+.modal{position:fixed;inset:0;background:rgba(3,6,15,.7);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal.on{display:flex}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:20px;width:100%;max-width:520px;padding:20px;max-height:92vh;overflow:auto}
+.box h2{font-size:20px;font-weight:900;margin-bottom:14px}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f label{display:flex;flex-direction:column;gap:6px;font-weight:800;font-size:13px;color:var(--mut)}
+.f label.full{grid-column:1/-1}
+.f .in{color:var(--txt)}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;padding:10px;border-radius:11px;border:1px solid var(--line);background:var(--panel2);font-weight:900;cursor:pointer}
+.seg button.ok.on{background:rgba(34,197,94,.18);border-color:var(--ok);color:#4ADE80}
+.seg button.bad.on{background:rgba(239,68,68,.15);border-color:var(--bad);color:#F87171}
+.acts{display:flex;gap:10px;justify-content:flex-start;margin-top:18px}
+.auth{max-width:380px;margin:9vh auto;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px}
+.auth h1{font-size:24px;font-weight:900;margin-bottom:4px}
+.auth p{color:var(--mut);font-weight:700;margin-bottom:18px;font-size:14px}
+.auth .in{width:100%;margin-bottom:10px}
+.err{color:#F87171;font-weight:800;font-size:14px;min-height:22px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1f2b48;border:1px solid var(--line);border-radius:12px;padding:10px 18px;font-weight:800;opacity:0;transition:.25s;z-index:60}
+.toast.on{opacity:1}
+footer{border-top:1px solid var(--line);padding:16px 0;color:var(--mut);font-weight:700;font-size:13px;text-align:center}
+footer b{color:var(--txt)}
+.hide{display:none!important}
+@media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.person .pg{grid-template-columns:repeat(2,1fr)}.tbl{overflow-x:auto}table{min-width:760px}}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <div class="logo"><i>💵</i>دفتر التحويلات</div>
+  <div class="sp"></div>
+  <span class="me" id="me"></span>
+  <button class="btn sm hide" id="btnSet">الإعدادات</button>
+  <button class="btn sm hide" id="btnOut">خروج</button>
+</div></header>
+
+<main><div class="wrap">
+
+  <!-- AUTH -->
+  <section id="auth" class="auth hide">
+    <h1 id="authT">تسجيل الدخول</h1>
+    <p id="authP">ادخل باسم المستخدم وكلمة السر.</p>
+    <input class="in" id="aUser" placeholder="اسم المستخدم" autocomplete="username">
+    <input class="in" id="aPw" type="password" placeholder="كلمة السر (8 حروف على الأقل)" autocomplete="current-password">
+    <div class="err" id="aErr"></div>
+    <button class="btn p" id="aGo" style="width:100%">دخول</button>
+  </section>
+
+  <!-- APP -->
+  <section id="app" class="hide">
+    <div class="grid">
+      <div class="stat ok"><small>ورق مدفوع ($)</small><b class="num" id="sPaid">0</b></div>
+      <div class="stat bad"><small>ورق مش مدفوع ($)</small><b class="num" id="sUnpaid">0</b></div>
+      <div class="stat warn"><small>مبالغ متبقية</small><b class="num" id="sRem">0</b></div>
+      <div class="stat"><small>اتحوّل للمصدر</small><b class="num" id="sTr">0</b></div>
+      <div class="stat gold"><small>العمولات</small><b class="num" id="sCom">0</b></div>
+    </div>
+
+    <div class="bar">
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input class="in" id="q" placeholder="ابحث بالاسم…" list="names" autocomplete="off"><datalist id="names"></datalist></div>
+      <div class="chips" id="chips"><span class="chip on" data-r="all">الكل</span><span class="chip" data-r="today">النهارده</span><span class="chip" data-r="week">آخر 7 أيام</span><span class="chip" data-r="month">الشهر ده</span></div>
+      <input class="in" type="date" id="from" title="من تاريخ"><input class="in" type="date" id="to" title="إلى تاريخ">
+      <button class="btn g" id="btnAdd">+ عملية جديدة</button>
+    </div>
+
+    <div class="person" id="person">
+      <h3>👤 <span id="pName"></span><span class="sp"></span><button class="btn sm" id="pClose">✕</button></h3>
+      <div class="pg">
+        <div><small>عدد العمليات</small><b class="num" id="pN">0</b></div>
+        <div><small>ورق مدفوع ($)</small><b class="num" id="pPaid" style="color:#4ADE80">0</b></div>
+        <div><small>ورق مش مدفوع ($)</small><b class="num" id="pUnpaid" style="color:#F87171">0</b></div>
+        <div><small>متبقي عليه</small><b class="num" id="pRem" style="color:var(--warn)">0</b></div>
+        <div><small>آخر دفع</small><b class="num" id="pLast">—</b></div>
+      </div>
+    </div>
+
+    <div class="card tbl">
+      <table>
+        <thead><tr><th>التاريخ</th><th>الاسم</th><th>العدد (ورقة $)</th><th>دفع؟</th><th>تحويل للمصدر الأساسي</th><th>العمولة</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty hide" id="empty">مفيش عمليات في الفترة دي.</div>
+    </div>
+  </section>
+</div></main>
+
+<!-- ROW MODAL -->
+<div class="modal" id="mRow"><div class="box">
+  <h2 id="mT">عملية جديدة</h2>
+  <div class="f">
+    <label>التاريخ<input class="in" type="date" id="fDate"></label>
+    <label>الاسم<input class="in" id="fName" list="names" autocomplete="off"></label>
+    <label>العدد (ورقة $)<input class="in num" type="number" min="0" step="1" id="fBills"></label>
+    <label>العمولة<input class="in num" type="number" min="0" step="0.01" id="fCom"></label>
+    <label class="full">دفع ولا لأ؟<div class="seg"><button type="button" class="ok" data-v="1">✔ دفع</button><button type="button" class="bad" data-v="0">✖ مدفعش</button></div></label>
+    <label class="full" id="lRem">المبلغ المتبقي عليه<input class="in num" type="number" min="0" step="0.01" id="fRem"></label>
+    <label class="full">اتحوّل للمصدر الأساسي؟<div class="seg" id="segTr"><button type="button" class="ok" data-v="1">✔ اتحوّل</button><button type="button" class="bad" data-v="0">✖ لسه</button></div></label>
+    <label class="full" id="lTr">المبلغ اللي اتحوّل<input class="in num" type="number" min="0" step="0.01" id="fTr"></label>
+    <label class="full">ملاحظة (اختياري)<input class="in" id="fNote"></label>
+  </div>
+  <div class="err" id="fErr"></div>
+  <div class="acts"><button class="btn p" id="fSave">حفظ</button><button class="btn" data-close>إلغاء</button><span class="sp"></span><button class="btn r hide" id="fDel">حذف</button></div>
+</div></div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal" id="mSet"><div class="box">
+  <h2>الإعدادات</h2>
+  <div id="ownerBox">
+    <p style="color:var(--mut);font-weight:700;margin-bottom:8px">المستخدمين (حد أقصى 2):</p>
+    <div id="uList" style="margin-bottom:12px"></div>
+    <div class="f" id="addUserF">
+      <label>اسم مستخدم جديد<input class="in" id="nuUser" autocomplete="off"></label>
+      <label>كلمة السر بتاعته<input class="in" type="password" id="nuPw" autocomplete="new-password"></label>
+    </div>
+    <div class="acts" style="margin-top:10px"><button class="btn p" id="nuGo">إضافة مستخدم</button></div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+  </div>
+  <div class="f">
+    <label>كلمة السر الحالية<input class="in" type="password" id="cpOld" autocomplete="current-password"></label>
+    <label>كلمة السر الجديدة<input class="in" type="password" id="cpNew" autocomplete="new-password"></label>
+  </div>
+  <div class="err" id="sErr"></div>
+  <div class="acts"><button class="btn p" id="cpGo">تغيير كلمة السر</button><button class="btn" data-close>إغلاق</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+<footer>© <span id="yr"></span> — الموقع مملوك لـ <b>M3otaz Elkaruony</b> · معتز الكريوني</footer>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzmskfiNin4AZ8BaH1scfTAkyAwanXSqvZZVaLm2wZe1jKRpJgeXWu41gwkFk-9c5JX/exec";
+const $ = s => document.querySelector(s);
+let TOK = sessionStorage.getItem('tok') || '', ROWS = [], ME = '', ROLE = '', USERS = [], RANGE = 'all', EDIT = null, F = {paid:1, tr:0};
+
+async function call(action, data){
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(Object.assign({action, token:TOK}, data||{}))});
+  const j = await r.json();
+  if (!j.ok && j.error === 'AUTH'){ logout(true); throw new Error('AUTH'); }
+  return j;
+}
+function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('on'); clearTimeout(e._t); e._t=setTimeout(()=>e.classList.remove('on'),2200); }
+const ERR = {BAD_LOGIN:'اسم المستخدم أو كلمة السر غلط', LOCKED:'محاولات كتير غلط، استنى 10 دقايق', ALREADY_SETUP:'الحساب الأساسي متعمل خلاص', MAX_USERS:'مينفعش أكتر من مستخدمين اتنين', EXISTS:'الاسم ده موجود', OWNER_ONLY:'المالك بس يقدر يعمل كده'};
+const msg = j => ERR[j.error] || j.error || 'حصل خطأ';
+const fmt = n => (Math.round((+n||0)*100)/100).toLocaleString('en-US');
+const today = () => new Date(Date.now()+3*3600e3).toISOString().slice(0,10);
+
+/* ---------- auth ---------- */
+async function boot(){
+  $('#yr').textContent = new Date().getFullYear();
+  if (TOK){ try { await load(); return; } catch(e){} }
+  const s = await call('status');
+  showAuth(!s.hasUsers);
+}
+function showAuth(setup){
+  $('#app').classList.add('hide'); $('#auth').classList.remove('hide');
+  ['#btnSet','#btnOut'].forEach(x=>$(x).classList.add('hide')); $('#me').textContent='';
+  $('#auth').dataset.setup = setup ? '1' : '';
+  $('#authT').textContent = setup ? 'إنشاء حساب المالك' : 'تسجيل الدخول';
+  $('#authP').textContent = setup ? 'أول مرة؟ اختار اسم مستخدم وكلمة سر ليك. الحساب ده هيبقى المالك.' : 'ادخل باسم المستخدم وكلمة السر.';
+  $('#aGo').textContent = setup ? 'إنشاء الحساب' : 'دخول';
+}
+$('#aGo').onclick = async () => {
+  $('#aErr').textContent=''; const setup = !!$('#auth').dataset.setup;
+  const j = await call(setup ? 'setup' : 'login', {user:$('#aUser').value, pw:$('#aPw').value});
+  if (!j.ok) return $('#aErr').textContent = msg(j);
+  TOK = j.token; sessionStorage.setItem('tok', TOK); $('#aPw').value=''; load();
+};
+$('#aPw').addEventListener('keydown', e => { if (e.key==='Enter') $('#aGo').click(); });
+function logout(silent){ if(!silent && TOK) call('logout').catch(()=>{}); TOK=''; sessionStorage.removeItem('tok'); showAuth(false); }
+$('#btnOut').onclick = () => logout();
+
+/* ---------- data ---------- */
+async function load(){
+  const j = await call('list'); if (!j.ok) throw new Error(j.error);
+  ROWS = j.rows; ME = j.me; ROLE = j.role; USERS = j.users || [];
+  $('#auth').classList.add('hide'); $('#app').classList.remove('hide');
+  ['#btnSet','#btnOut'].forEach(x=>$(x).classList.remove('hide'));
+  $('#me').textContent = '👤 ' + ME + (ROLE==='owner' ? ' (المالك)' : '');
+  render();
+}
+function inRange(d){
+  const f = $('#from').value, t = $('#to').value;
+  if (f && d < f) return false; if (t && d > t) return false; return true;
+}
+function setRange(r){
+  RANGE = r; document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on', c.dataset.r===r));
+  const t = today(), d = new Date(t);
+  if (r==='all'){ $('#from').value=''; $('#to').value=''; }
+  if (r==='today'){ $('#from').value=t; $('#to').value=t; }
+  if (r==='week'){ const a=new Date(d); a.setDate(a.getDate()-6); $('#from').value=a.toISOString().slice(0,10); $('#to').value=t; }
+  if (r==='month'){ $('#from').value=t.slice(0,8)+'01'; $('#to').value=t; }
+  render();
+}
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>setRange(c.dataset.r));
+['#from','#to'].forEach(x=>$(x).onchange=()=>{ document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on')); render(); });
+$('#q').oninput = render;
+$('#pClose').onclick = () => { $('#q').value=''; render(); };
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function render(){
+  const q = $('#q').value.trim().toLowerCase();
+  const names = [...new Set(ROWS.map(r=>String(r.name)))].sort();
+  $('#names').innerHTML = names.map(n=>`<option value="${esc(n)}">`).join('');
+  let list = ROWS.filter(r => inRange(String(r.date)));
+  if (q) list = list.filter(r => String(r.name).toLowerCase().includes(q));
+  list.sort((a,b)=> String(b.date).localeCompare(String(a.date)) || String(b.updatedAt).localeCompare(String(a.updatedAt)));
+  // stats
+  const sum = (arr,f)=>arr.reduce((s,r)=>s+(+f(r)||0),0);
+  $('#sPaid').textContent = fmt(sum(list.filter(r=>+r.paid),r=>r.bills));
+  $('#sUnpaid').textContent = fmt(sum(list.filter(r=>!+r.paid),r=>r.bills));
+  $('#sRem').textContent = fmt(sum(list,r=>r.remaining));
+  $('#sTr').textContent = fmt(sum(list.filter(r=>+r.transferred),r=>r.transferredAmount));
+  $('#sCom').textContent = fmt(sum(list,r=>r.commission));
+  // person panel
+  const exact = q && names.find(n=>n.toLowerCase()===q);
+  const pRows = q ? list : [];
+  if (q && pRows.length){
+    $('#person').style.display='block';
+    $('#pName').textContent = exact || ('نتائج البحث: ' + $('#q').value.trim());
+    $('#pN').textContent = pRows.length;
+    $('#pPaid').textContent = fmt(sum(pRows.filter(r=>+r.paid),r=>r.bills));
+    $('#pUnpaid').textContent = fmt(sum(pRows.filter(r=>!+r.paid),r=>r.bills));
+    $('#pRem').textContent = fmt(sum(pRows,r=>r.remaining));
+    const lp = pRows.filter(r=>+r.paid).map(r=>String(r.date)).sort().pop();
+    $('#pLast').textContent = lp || '—';
+  } else $('#person').style.display='none';
+  // table
+  $('#rows').innerHTML = list.map(r => `<tr data-id="${esc(r.id)}">
+    <td class="num">${esc(r.date)}</td>
+    <td><span class="name" data-n="${esc(r.name)}">${esc(r.name)}</span>${r.note?`<span class="rem" style="color:var(--mut)">${esc(r.note)}</span>`:''}</td>
+    <td class="num">${fmt(r.bills)}</td>
+    <td><span class="tag ${+r.paid?'ok':'bad'}" data-t="paid" title="دوس للتغيير">${+r.paid?'✔ دفع':'✖ مدفعش'}</span>${!+r.paid && +r.remaining?`<span class="rem">متبقي: <span class="num">${fmt(r.remaining)}</span></span>`:''}</td>
+    <td><span class="tag ${+r.transferred?'ok':'no'}">${+r.transferred?'✔ اتحوّل':'لسه'}</span>${+r.transferred && +r.transferredAmount?` <span class="num" style="font-weight:900">${fmt(r.transferredAmount)}</span>`:''}</td>
+    <td class="num">${+r.commission?fmt(r.commission):'—'}</td>
+    <td><button class="btn sm" data-e>تعديل</button></td></tr>`).join('');
+  $('#empty').classList.toggle('hide', list.length>0);
+}
+$('#rows').onclick = async e => {
+  const tr = e.target.closest('tr'); if (!tr) return; const r = ROWS.find(x=>String(x.id)===tr.dataset.id);
+  if (e.target.closest('[data-e]')) return openRow(r);
+  if (e.target.closest('.name')){ $('#q').value = e.target.closest('.name').dataset.n; return render(); }
+  if (e.target.closest('[data-t="paid"]')){
+    if (!+r.paid){ r.paid=1; r.remaining=0; }
+    else { r.paid=0; const v=prompt('المبلغ المتبقي عليه (سيبه فاضي لو مفيش):',''); r.remaining = +v||0; }
+    render(); const j = await call('save',{row:r}); toast(j.ok?'اتحفظ ✔':msg(j)); if(!j.ok) load();
+  }
+};
+
+/* ---------- row modal ---------- */
+function seg(el, v){ el.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.v===String(v))); }
+const segPaid = document.querySelectorAll('.seg')[0], segTr = $('#segTr');
+segPaid.onclick = e => { const b=e.target.closest('button'); if(!b) return; F.paid=+b.dataset.v; seg(segPaid,F.paid); $('#lRem').classList.toggle('hide', !!F.paid); };
+segTr.onclick = e => { const b=e.target.closest('button'); if(!b) return; F.tr=+b.dataset.v; seg(segTr,F.tr); $('#lTr').classList.toggle('hide', !F.tr); };
+function openRow(r){
+  EDIT = r || null; $('#fErr').textContent='';
+  $('#mT').textContent = r ? 'تعديل العملية' : 'عملية جديدة';
+  $('#fDate').value = r ? r.date : today(); $('#fName').value = r ? r.name : ($('#q').value.trim()||'');
+  $('#fBills').value = r ? r.bills : ''; $('#fCom').value = r && +r.commission ? r.commission : '';
+  $('#fRem').value = r && +r.remaining ? r.remaining : ''; $('#fTr').value = r && +r.transferredAmount ? r.transferredAmount : '';
+  $('#fNote').value = r ? (r.note||'') : '';
+  F.paid = r ? +r.paid : 1; F.tr = r ? +r.transferred : 0; seg(segPaid,F.paid); seg(segTr,F.tr);
+  $('#lRem').classList.toggle('hide', !!F.paid); $('#lTr').classList.toggle('hide', !F.tr);
+  $('#fDel').classList.toggle('hide', !r); $('#mRow').classList.add('on'); setTimeout(()=>$(r?'#fBills':'#fName').focus(),50);
+}
+$('#btnAdd').onclick = () => openRow(null);
+$('#fSave').onclick = async () => {
+  const row = {id: EDIT && EDIT.id, date:$('#fDate').value, name:$('#fName').value.trim(), bills:$('#fBills').value, paid:F.paid, remaining:$('#fRem').value, transferred:F.tr, transferredAmount:$('#fTr').value, commission:$('#fCom').value, note:$('#fNote').value};
+  if (!row.name) return $('#fErr').textContent='اكتب الاسم';
+  if (!row.date) return $('#fErr').textContent='اختار التاريخ';
+  $('#fSave').disabled = true;
+  try { const j = await call('save',{row}); if(!j.ok) return $('#fErr').textContent=msg(j); $('#mRow').classList.remove('on'); toast('اتحفظ ✔'); await load(); }
+  finally { $('#fSave').disabled = false; }
+};
+$('#fDel').onclick = async () => {
+  if (!EDIT || !confirm('متأكد إنك عايز تحذف العملية دي؟')) return;
+  const j = await call('del',{id:EDIT.id}); $('#mRow').classList.remove('on'); toast(j.ok?'اتحذفت':msg(j)); load();
+};
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal').classList.remove('on'));
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('on'); }));
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.querySelectorAll('.modal.on').forEach(m=>m.classList.remove('on')); });
+
+/* ---------- settings ---------- */
+function renderUsers(){
+  $('#uList').innerHTML = USERS.map(u=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0"><b>👤 ${esc(u)}</b>${u===ME?'<small style="color:var(--mut)">(انت)</small>':`<button class="btn sm r" data-du="${esc(u)}">حذف</button>`}</div>`).join('');
+  $('#addUserF').classList.toggle('hide', USERS.length>=2); $('#nuGo').classList.toggle('hide', USERS.length>=2);
+}
+$('#btnSet').onclick = () => { $('#sErr').textContent=''; $('#ownerBox').classList.toggle('hide', ROLE!=='owner'); renderUsers(); $('#mSet').classList.add('on'); };
+$('#nuGo').onclick = async () => { const j = await call('addUser',{user:$('#nuUser').value,pw:$('#nuPw').value}); if(!j.ok) return $('#sErr').textContent=msg(j); USERS=j.users; $('#nuUser').value=$('#nuPw').value=''; renderUsers(); toast('اتضاف ✔'); };
+$('#uList').onclick = async e => { const b=e.target.closest('[data-du]'); if(!b||!confirm('حذف المستخدم '+b.dataset.du+'؟')) return; const j=await call('delUser',{user:b.dataset.du}); if(j.ok){USERS=j.users;renderUsers();} };
+$('#cpGo').onclick = async () => { const j = await call('changePw',{old:$('#cpOld').value,pw:$('#cpNew').value}); if(!j.ok) return $('#sErr').textContent=msg(j); $('#cpOld').value=$('#cpNew').value=''; toast('اتغيرت ✔'); };
+
+boot().catch(e=>{ if(e.message!=='AUTH') showAuth(false); });
+</script>
+</body>
+</html>
