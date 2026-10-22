@@ -83,6 +83,20 @@ tr:hover td{background:rgba(79,140,255,.04)}
 footer{border-top:1px solid var(--line);padding:16px 0;color:var(--mut);font-weight:700;font-size:13px;text-align:center}
 footer b{color:var(--txt)}
 .hide{display:none!important}
+.nt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.nt div{border-radius:14px;padding:12px 14px;border:1px solid var(--line)}
+.nt small{display:block;color:var(--mut);font-weight:800;font-size:12px}
+.nt b{font-size:24px;font-weight:900}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.ni .w{flex:1;min-width:0}
+.ni .w b{display:block}
+.ni .w small{color:var(--mut);font-weight:700;font-size:12px}
+.ni.done{opacity:.45}
+.ni.done .w b{text-decoration:line-through}
+.pill{font-size:12px;font-weight:900;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.pill.lend{background:rgba(34,197,94,.14);color:#4ADE80}
+.pill.owe{background:rgba(239,68,68,.14);color:#F87171}
+.box.wide{max-width:640px}
 .wa{display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;border-radius:9px;padding:5px 10px;font-weight:900;font-size:13px;text-decoration:none;margin-inline-start:6px}
 .wa:hover{background:#1EBE5A}
 .wa svg{width:16px;height:16px}
@@ -95,6 +109,7 @@ footer b{color:var(--txt)}
   <div class="logo"><i>💵</i>دفتر التحويلات</div>
   <div class="sp"></div>
   <span class="me" id="me"></span>
+  <button class="btn sm hide" id="btnNotes">📒 مذكرتي</button>
   <button class="btn sm hide" id="btnSet">الإعدادات</button>
   <button class="btn sm hide" id="btnOut">خروج</button>
 </div></header>
@@ -188,6 +203,24 @@ footer b{color:var(--txt)}
   <div class="acts"><button class="btn p" id="cpGo">تغيير كلمة السر</button><button class="btn" data-close>إغلاق</button></div>
 </div></div>
 
+<!-- NOTES MODAL (owner only) -->
+<div class="modal" id="mNotes"><div class="box wide">
+  <h2>📒 مذكرتي <small style="color:var(--mut);font-size:13px;font-weight:700">— خاصة بيك بس، ملهاش علاقة بالعملاء ولا التقارير</small></h2>
+  <div class="nt">
+    <div style="background:rgba(34,197,94,.08)"><small>ليا عند الناس</small><b class="num" id="nLend" style="color:#4ADE80">0</b></div>
+    <div style="background:rgba(239,68,68,.08)"><small>عليّا للناس (سالف)</small><b class="num" id="nOwe" style="color:#F87171">0</b></div>
+  </div>
+  <div class="f">
+    <label class="full"><div class="seg" id="segN"><button type="button" class="ok on" data-v="lend">ليا عنده فلوس</button><button type="button" class="bad" data-v="owe">أنا سالف منه</button></div></label>
+    <label>الاسم<input class="in" id="nPerson" autocomplete="off"></label>
+    <label>المبلغ<input class="in num" type="number" min="0" step="0.01" id="nAmount"></label>
+    <label class="full">ملاحظة (اختياري)<input class="in" id="nNote"></label>
+  </div>
+  <div class="err" id="nErr"></div>
+  <div class="acts" style="margin-top:4px"><button class="btn p" id="nSave">+ إضافة</button><button class="btn" data-close>إغلاق</button><span class="sp"></span><label style="display:flex;align-items:center;gap:6px;font-weight:700;color:var(--mut);font-size:13px"><input type="checkbox" id="nShowDone"> اعرض اللي اتقفل</label></div>
+  <div id="nList" style="margin-top:14px"></div>
+</div></div>
+
 <div class="toast" id="toast"></div>
 <footer>© <span id="yr"></span> — الموقع مملوك لـ <b>M3otaz Elkaruony</b> · معتز الكريوني</footer>
 
@@ -217,7 +250,7 @@ async function boot(){
 }
 function showAuth(setup){
   $('#app').classList.add('hide'); $('#auth').classList.remove('hide');
-  ['#btnSet','#btnOut'].forEach(x=>$(x).classList.add('hide')); $('#me').textContent='';
+  ['#btnSet','#btnOut','#btnNotes'].forEach(x=>$(x).classList.add('hide')); $('#me').textContent='';
   $('#auth').dataset.setup = setup ? '1' : '';
   $('#authT').textContent = setup ? 'إنشاء حساب المالك' : 'تسجيل الدخول';
   $('#authP').textContent = setup ? 'أول مرة؟ اختار اسم مستخدم وكلمة سر ليك. الحساب ده هيبقى المالك.' : 'ادخل باسم المستخدم وكلمة السر.';
@@ -239,6 +272,7 @@ async function load(){
   ROWS = j.rows; ME = j.me; ROLE = j.role; USERS = j.users || [];
   $('#auth').classList.add('hide'); $('#app').classList.remove('hide');
   ['#btnSet','#btnOut'].forEach(x=>$(x).classList.remove('hide'));
+  $('#btnNotes').classList.toggle('hide', ROLE!=='owner');
   $('#me').textContent = '👤 ' + ME + (ROLE==='owner' ? ' (المالك)' : '');
   render();
 }
@@ -354,6 +388,38 @@ $('#btnSet').onclick = () => { $('#sErr').textContent=''; $('#ownerBox').classLi
 $('#nuGo').onclick = async () => { const j = await call('addUser',{user:$('#nuUser').value,pw:$('#nuPw').value}); if(!j.ok) return $('#sErr').textContent=msg(j); USERS=j.users; $('#nuUser').value=$('#nuPw').value=''; renderUsers(); toast('اتضاف ✔'); };
 $('#uList').onclick = async e => { const b=e.target.closest('[data-du]'); if(!b||!confirm('حذف المستخدم '+b.dataset.du+'؟')) return; const j=await call('delUser',{user:b.dataset.du}); if(j.ok){USERS=j.users;renderUsers();} };
 $('#cpGo').onclick = async () => { const j = await call('changePw',{old:$('#cpOld').value,pw:$('#cpNew').value}); if(!j.ok) return $('#sErr').textContent=msg(j); $('#cpOld').value=$('#cpNew').value=''; toast('اتغيرت ✔'); };
+
+/* ---------- مذكرتي ---------- */
+let NOTES = [], NT = 'lend';
+const segN = $('#segN');
+segN.onclick = e => { const b=e.target.closest('button'); if(!b) return; NT=b.dataset.v; segN.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b)); };
+function renderNotes(){
+  const open = NOTES.filter(n=>!+n.done), sum=t=>open.filter(n=>n.type===t).reduce((s,n)=>s+(+n.amount||0),0);
+  $('#nLend').textContent = fmt(sum('lend')); $('#nOwe').textContent = fmt(sum('owe'));
+  const show = $('#nShowDone').checked;
+  const list = NOTES.filter(n=>show || !+n.done).sort((a,b)=> (+a.done - +b.done) || String(b.createdAt).localeCompare(String(a.createdAt)));
+  $('#nList').innerHTML = list.length ? list.map(n=>`<div class="ni ${+n.done?'done':''}" data-id="${esc(n.id)}">
+    <span class="pill ${n.type==='owe'?'owe':'lend'}">${n.type==='owe'?'عليّا':'ليا'}</span>
+    <div class="w"><b>${esc(n.person)} — <span class="num">${fmt(n.amount)}</span></b><small><span class="num">${esc(n.createdAt)}</span>${n.note?' · '+esc(n.note):''}${+n.done&&n.doneAt?' · اتقفل '+esc(n.doneAt):''}</small></div>
+    <button class="btn sm" data-a="done">${+n.done?'↩ رجّعه':'✔ اتسدد'}</button><button class="btn sm r" data-a="del">حذف</button></div>`).join('') : '<div class="empty" style="padding:20px">مفيش حاجة متسجلة.</div>';
+}
+async function loadNotes(){ const j = await call('notes'); if(j.ok){ NOTES=j.notes; renderNotes(); } }
+$('#btnNotes').onclick = () => { $('#nErr').textContent=''; $('#mNotes').classList.add('on'); renderNotes(); loadNotes(); };
+$('#nShowDone').onchange = renderNotes;
+$('#nSave').onclick = async () => {
+  const note = {type:NT, person:$('#nPerson').value.trim(), amount:$('#nAmount').value, note:$('#nNote').value};
+  if (!note.person) return $('#nErr').textContent='اكتب الاسم';
+  $('#nSave').disabled = true;
+  try { const j = await call('noteSave',{note}); if(!j.ok) return $('#nErr').textContent=msg(j);
+    $('#nPerson').value=$('#nAmount').value=$('#nNote').value=''; $('#nErr').textContent=''; toast('اتسجل ✔'); await loadNotes(); }
+  finally { $('#nSave').disabled = false; }
+};
+$('#nList').onclick = async e => {
+  const b = e.target.closest('[data-a]'); if(!b) return; const n = NOTES.find(x=>String(x.id)===b.closest('.ni').dataset.id); if(!n) return;
+  if (b.dataset.a==='del'){ if(!confirm('حذف '+n.person+'؟')) return; await call('noteDel',{id:n.id}); }
+  else await call('noteSave',{note:Object.assign({}, n, {done: +n.done?0:1})});
+  loadNotes();
+};
 
 boot().catch(e=>{ if(e.message!=='AUTH') showAuth(false); });
 </script>
